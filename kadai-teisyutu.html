@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>myMemoPad</title>
+
+<link rel="stylesheet" href="css/sample.css">
+</head>
+<body>
+<header>
+<h1>MemoPad</h1>
+</header>
+<main style="display: none;">
+    <input type="text" id="key">
+    <textarea id="memo"></textarea>
+    <ul>
+        <li id="save">Save</li>
+        <li id="clear">Clear</li>
+    </ul>
+</main>
+<table id="list">
+<!-- ここに追加データが挿入される -->
+</table>
+<footer><small>G's</small></footer>
+
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+
+<script>
+
+
+$("main").fadeIn(1000);
+
+//1.Save クリックイベント
+$("#save").on("click", function () {
+// valの記述(#keyから値を取ってきたら定数keyに代入する)
+        const key = $("#key").val();
+// ウェブコンソールkeyに出力する
+        console.log(key,"key");
+// valの記述(#memoから値を取ってきたら定数valueに代入する)
+        const value = $("#memo").val();
+// ウェブコンソールvalueに出力する
+        console.log(value,"value");
+// ローカルストレージにkeyとvalueをペアにしてデータ保存
+        localStorage.setItem(key,value);
+        
+    // 変数にhtmlを組み合わせるテクニック
+        // const html =
+        // '<tr><th>'
+        //     +key+
+        // '</th><td>'
+        //     +value+
+        // '</td></tr>';
+    
+// テンプレートリテラルという新しい書き方（推奨！！）
+    const html = `
+        <tr>
+            <th>${key}</th> 
+            <td><input type="text" value=${value} /></td>
+            <td class="deleat">削除</td> 
+            <td class="update">更新</td>
+        </tr>
+        `;
+// htmlに表示＝jQueryで処理をしたものをhtmlに埋め込む
+// listに上からhtmlを蓄積させる
+        $("#list").append(html);
+        });
+
+
+
+//2.clear クリックイベント
+$("#clear").on("click", function () {
+        // アプリケーション→ローカルストレージの項目を削除する
+        localStorage.clear();
+
+        // id='list'の中身を削除する
+        $("#list").empty();
+      });
+
+
+//3.ページ読み込み：保存データ取得表示(for文は繰り返し)
+for (let i = 0; i < localStorage.length; i++) {
+        // ローカルストレージからデータ取得（0〜n）インデックス
+        const key = localStorage.key(i);
+        // ローカルストレージからデータを取得keyネーム
+        const value = localStorage.getItem(key);
+
+        const html = `
+          <tr id= ${i}>
+              <th>${key}</th>
+              <td><input type="text" value=${value} /></td>
+              <td class="delete">削除</td>
+              <td class="update">更新</td>
+          </tr>
+          `;
+
+        // htmlを上から表示＝jQueryで処理をしたものをhtmlに埋め込む
+        $("#list").append(html);
+      }
+
+//.削除の例
+// $("tr").on("click", function () {
+//     // カギが入る
+//     const kagi = $(this).children('th').text();
+//     console.log(kagi,'thisをチェック');
+//     // alert(111)
+
+//     // // アプリケーション→ローカルストレージの項目を削除する
+//     localStorage.removeItem(kagi);
+
+//     // // id='list'の中身を削除する
+//     $(this).empty();
+//       });
+
+//.削除の例１(あんどうさん)
+// $("tr").on("click", function () {
+//     // カギが入る
+//     const aaa = $(this).find('th input').val();
+//     console.log(aaa,'thisをチェック');
+//     // alert(111)
+//     // // アプリケーション→ローカルストレージの項目を削除する
+//     localStorage.removeItem(aaa);
+//     // // id='list'の中身を削除する
+//     $(this).empty();
+//       });
+
+//.削除の例2(あんどうさん)
+// $(".delete").on("click", function () {
+//     // カギが入る（siblingsは並列の要素に対して）
+//     const aaa = $(this).siblings('th').text();
+//     console.log(aaa,'thisをチェック');
+//     // alert(111)
+//     // // アプリケーション→ローカルストレージの項目を削除する
+//     localStorage.removeItem(aaa);
+//     // // id='list'の中身を削除する
+//     $(this).parent('tr').empty();
+//       });
+
+//.更新の例
+// $("tr").on("click", function () {
+//     // カギが入っています
+//     const kagi = $(this).find('th input').val();
+//     // タグの中のテキストを取ってきてくれる
+//     console.log(kagi,'thisをチェック')
+//     // alert(111)
+
+//     // // アプリケーション→ローカルストレージの項目を取得する
+//     localStorage.setItem(kagi);
+//       });
+
+//.更新の例(あんどうさん)
+// $(".update").on("click", function () {
+//     // カギが入っています
+//     const kagi = $(this).siblings('th').text();
+//     const bbbb = $(this).parent('tr').find('td input').val();
+//     // タグの中のテキストを取ってきてくれる
+//     console.log(kagi,bbbb,'thisをチェック')
+//     // alert(111)
+//     // // アプリケーション→ローカルストレージの項目を取得する
+//     localStorage.setItem(kagi, bbbb);
+//       });
+
+
+//.例3　最終版(あんどうさん)
+//.削除の例
+$(".delete").on("click", function () {
+    // カギが入る
+    // const aaa = $(this).siblings('th').text();
+    const aaa = $(this).parent('tr').find('th').text();
+    console.log(aaa,'thisをチェック');
+    // alert(111)
+    // // アプリケーション→ローカルストレージの項目を削除する
+    localStorage.removeItem(aaa);
+    // // id='list'の中身を削除する
+    $(this).parent('tr').empty();
+      });
+
+//.更新の例
+$(".update").on("click", function () {
+    // カギが入っています
+    // const kagi = $(this).siblings('th').text();
+    const kagi = $(this).parent('tr').find('th').text();
+    const bbbb = $(this).parent('tr').find('td input').val();
+    // タグの中のテキストを取ってきてくれる
+    console.log(kagi,bbbb,'thisをチェック')
+    // alert(111)
+    // // アプリケーション→ローカルストレージの項目を取得する
+    localStorage.setItem(kagi, bbbb);
+      });
+
+</script>
+
+
+
+</body>
+</html>
